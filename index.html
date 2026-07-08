@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>첫사랑-국어 발표용 자료</title>
+
+<!-- Pretendard: 한글 가독성이 뛰어난 본문/제목 겸용 폰트 -->
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+
+<style>
+  /* ============================================================
+     0. 디자인 토큰
+     ============================================================ */
+  :root {
+    /* 색상: 화이트 베이스 + 잉크 텍스트 + 딥블루 포인트 하나 */
+    --color-bg:        #FFFFFF;
+    --color-bg-soft:   #F7F8FA;   /* 섹션/카드 배경용 아주 옅은 회청색 */
+    --color-ink:       #1A1D23;   /* 순검정 대신: 본문/제목 */
+    --color-ink-sub:   #5B6270;   /* 보조 텍스트, 캡션 */
+    --color-line:      #E5E7EB;   /* 구분선, 테두리 */
+    --color-accent:    #2451D6;   /* 포인트 컬러: 딥 블루 */
+    --color-accent-soft:#EAF0FE;  /* 포인트 컬러의 옅은 배경 */
+    --color-warn:      #C2410C;   /* 강조/경고용 보조 컬러(과용 금지) */
+
+    /* 타이포그래피 */
+    --font-base: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+                 'Malgun Gothic', system-ui, sans-serif;
+    --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+    /* 슬라이드 규격: 16:9, 1280x720 기준 좌표계 */
+    --slide-w: 1280px;
+    --slide-h: 720px;
+    --pad-x: 88px;
+    --pad-y: 72px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #3a3d42; /* 슬라이드 밖 배경(뷰어 모드) */
+    font-family: var(--font-base);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ============================================================
+     1. 슬라이드 컨테이너 / 뷰어
+     ============================================================ */
+  .deck {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px 0 120px;
+  }
+
+  .slide {
+    position: relative;
+    width: var(--slide-w);
+    height: var(--slide-h);
+    background: var(--color-bg);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-bottom: 28px;
+    display: none; /* 프레젠테이션 모드에서는 JS가 하나씩만 보여줌 */
+  }
+  .slide.active { display: block; }
+
+  /* 프레젠테이션 모드: 현재 슬라이드만 화면 중앙에 꽉 차게 */
+  body.present-mode {
+    background: #000;
+  }
+  body.present-mode .deck {
+    min-height: 100vh;
+    padding: 0;
+    justify-content: center;
+  }
+  body.present-mode .slide {
+    box-shadow: none;
+  }
+
+  /* 공통 내부 패딩 래퍼 */
+  .slide-inner {
+    position: absolute;
+    inset: 0;
+    padding: var(--pad-y) var(--pad-x);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ============================================================
+     2. 공통 타이포그래피 스케일
+     ============================================================ */
+  .eyebrow {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+
+  h1.title-xl {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--color-ink);
+  }
+
+  h2.title-lg {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+    color: var(--color-ink);
+  }
+
+  h3.title-md {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0 0 4px;
+    color: var(--color-ink);
+  }
+
+  p.subtitle {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--color-ink-sub);
+    margin: 0;
+  }
+
+  .body-text {
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--color-ink);
+  }
+
+  .caption {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-ink-sub);
+  }
+
+  /* 강조 텍스트 (남발 금지: 슬라이드당 1~2곳) */
+  .highlight {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  /* ============================================================
+     3. 리스트 (불릿) - 가독성 중심
+     ============================================================ */
+  ul.point-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  ul.point-list li {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 18px;
+    font-size: 19px;
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+  ul.point-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+  ul.point-list li .li-sub {
+    display: block;
+    font-size: 16px;
+    color: var(--color-ink-sub);
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+
+  /* 번호 리스트 (진짜 순서/절차가 있을 때만 사용) */
+  ol.step-list {
+    list-style: none;
+    counter-reset: step;
+    margin: 0;
+    padding: 0;
+  }
+  ol.step-list li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 46px;
+    margin-bottom: 22px;
+    font-size: 19px;
+    line-height: 1.6;
+  }
+  ol.step-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ============================================================
+     4. 레이아웃 유틸리티
+     ============================================================ */
+  .row {
+    display: flex;
+    flex: 1;
+    gap: 56px;
+    min-height: 0;
+  }
+  .col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .col-40 { flex: 0 0 40%; }
+  .col-60 { flex: 0 0 60%; }
+
+  .content-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+  }
+
+  /* 카드형 블록 */
+  .card {
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+    padding: 28px 30px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+
+  .card-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin: 0 0 10px;
+  }
+  .card-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin: 0 0 8px;
+    line-height: 1.4;
+  }
+  .card-desc {
+    font-size: 15px;
+    color: var(--color-ink-sub);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* 이미지/도표 placeholder */
+  .media-box {
+    flex: 1;
+    background: var(--color-bg-soft);
+    border: 1px dashed #C7CBD1;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-ink-sub);
+    font-size: 15px;
+    min-height: 0;
+  }
+
+  /* 큰 숫자 통계 */
+  .stat-num {
+    font-family: var(--font-mono);
+    font-size: 68px;
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .stat-label {
+    font-size: 16px;
+    color: var(--color-ink-sub);
+    margin-top: 10px;
+  }
+
+  /* 테이블 */
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 17px;
+  }
+  table.data-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--color-bg-soft);
+    color: var(--color-ink-sub);
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 2px solid var(--color-line);
+  }
+  table.data-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-line);
+    color: var(--color-ink);
+  }
+
+  /* 인용구 */
+  blockquote.quote {
+    margin: 0;
+    padding: 0 0 0 28px;
+    border-left: 4px solid var(--color-accent);
+    font-size: 26px;
+    line-height: 1.6;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  blockquote.quote cite {
+    display: block;
+    margin-top: 16px;
+    font-size: 15px;
+    font-style: normal;
+    color: var(--color-ink-sub);
+  }
+
+  /* 코드 블록 */
+  pre.code-block {
+    background: #1A1D23;
+    color: #E8EAED;
+    border-radius: 12px;
+    padding: 24px 28px;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  /* ============================================================
+     5. 슬라이드 하단 메타 정보 (페이지 번호 / 세션명)
+     ============================================================ */
+  .slide-footer {
+    position: absolute;
+    left: var(--pad-x);
+    right: var(--pad-x);
+    bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--color-ink-sub);
+  }
+  .slide-footer .page-num {
+    font-family: var(--font-mono);
+  }
+
+  /* ============================================================
+     6. 슬라이드 종류별 스타일
+     ============================================================ */
+
+  /* --- 표지 슬라이드 --- */
+  .slide-cover .slide-inner {
+    justify-content: center;
+  }
+  .slide-cover .cover-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 36px;
+    font-size: 16px;
+    color: var(--color-ink-sub);
+  }
+  .slide-cover .cover-meta span {
+    padding-right: 24px;
+    border-right: 1px solid var(--color-line);
+  }
+  .slide-cover .cover-meta span:last-child {
+    border-right: none;
+  }
+
+  /* --- 섹션 구분 슬라이드 --- */
+  .slide-section .slide-inner {
+    justify-content: center;
+    background: var(--color-ink);
+  }
+  .slide-section h2.title-lg,
+  .slide-section .eyebrow {
+    color: #fff;
+  }
+  .slide-section .eyebrow { color: #8FB0FF; }
+  .slide-section p.subtitle { color: #B7BCC6; }
+  .slide-section .section-index {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    color: #6B7280;
+    margin-bottom: 20px;
+  }
+
+  /* --- 목차 슬라이드 --- */
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+  }
+  .toc-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 22px;
+  }
+  .toc-list li:first-child { padding-top: 0; }
+  .toc-list .toc-num {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    color: var(--color-accent);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .toc-list .toc-label { color: var(--color-ink); font-weight: 600; }
+  .toc-list .toc-sub { color: var(--color-ink-sub); font-size: 15px; margin-left: auto; }
+
+  /* --- 마무리(Thank you) 슬라이드 --- */
+  .slide-closing .slide-inner {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--color-ink);
+  }
+  .slide-closing h2.title-lg { color: #fff; }
+  .slide-closing p.subtitle { color: #B7BCC6; }
+
+  /* ============================================================
+     7. 네비게이션 컨트롤 (뷰어용, 인쇄/PDF 변환 시엔 숨김)
+     ============================================================ */
+  .nav-controls {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(26,29,35,0.9);
+    padding: 10px 18px;
+    border-radius: 999px;
+    z-index: 100;
+    font-family: var(--font-base);
+  }
+  .nav-controls button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-controls button:hover { background: rgba(255,255,255,0.15); }
+  .nav-controls .nav-count {
+    color: #fff;
+    font-size: 13px;
+    font-family: var(--font-mono);
+    min-width: 56px;
+    text-align: center;
+  }
+
+  @media print {
+    .nav-controls { display: none !important; }
+    body { background: #fff; }
+    .slide {
+      display: block !important;
+      box-shadow: none;
+      page-break-after: always;
+      margin: 0;
+    }
+    .deck { padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ============================================================
+       SLIDE 1 — 표지
+       ============================================================ -->
+  <section class="slide slide-cover active">
+    <div class="slide-inner">
+      <p class="eyebrow">국어 창의발표용 발표 자료</p>
+      <h1 class="title-xl">첫사랑<br>나만의 독창적인 해석</h1>
+      <p class="subtitle" style="margin-top:20px; max-width:640px;">
+        고재종-[첫사랑] 을 저만의 독창적인 방식으로 해석했습니다
+      </p>
+      <div class="cover-meta">
+        <span>최성원</span>
+        <span>2학년 4반-국어 창의발표</span>
+        <span>제작: 2026. 07. 08.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 2 — 목차
+       ============================================================ -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">Contents</p>
+      <h2 class="title-lg" style="margin-bottom:32px;">목차</h2>
+      <ul class="toc-list">
+        <li><span class="toc-num">01</span><span class="toc-label">첫사랑을 선택한 이유</span><span class="toc-sub">고재종의 첫사랑을 선택한 이유</span></li>
+        <li><span class="toc-num">02</span><span class="toc-label">핵심 내용 설명</span><span class="toc-sub">첫사랑의 전체적인 내용</span></li>
+        <li><span class="toc-num">03</span><span class="toc-label"></span><span class="toc-sub">실제 적용 예시</span></li>
+        <li><span class="toc-num">04</span><span class="toc-label">실습 / 적용 방법</span><span class="toc-sub">단계별 절차</span></li>
+        <li><span class="toc-num">05</span><span class="toc-label">요약 및 Q&A</span><span class="toc-sub">정리와 질의응답</span></li>
+      </ul>
+      <div class="slide-footer">
+        <span>첫사랑-국어 발표용</span>
+        <span class="page-num">02 / 10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 3 — 섹션 구분 슬라이드
+       ============================================================ -->
+  <section class="slide slide-section">
+    <div class="slide-inner">
+      <p class="section-index">Section 01</p>
+      <h2 class="title-lg" style="font-size:44px;">도입 및 개요</h2>
+      <p class="subtitle">이번 섹션에서 다룰 내용에 대한 짧은 소개</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 4 — 기본 콘텐츠: 제목 + 불릿 리스트
+       ============================================================ -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">01. 도입 및 개요</p>
+      <h2 class="title-lg">이 주제가 중요한 이유</h2>
+      <div class="content-body">
+        <ul class="point-list">
+          <li>핵심 포인트 하나를 명확한 문장으로 작성합니다.
+            <span class="li-sub">보충 설명이 필요하면 이렇게 작은 글씨로 덧붙입니다.</span>
+          </li>
+          <li>두 번째 포인트는 첫 번째와 대등한 무게로 다룹니다.</li>
+          <li>세 번째 포인트: 너무 많은 불릿은 오히려 가독성을 해치므로 <span class="highlight">3~5개 이내</span>로 유지하세요.</li>
+        </ul>
+      </div>
+      <div class="slide-footer">
+        <span>강의 제목</span>
+        <span class="page-num">04 / 10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 5 — 2단 레이아웃: 텍스트 + 이미지/도표 영역
+       ============================================================ -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">02. 핵심 개념 설명</p>
+      <h2 class="title-lg">개념의 구조 이해하기</h2>
+      <div class="row" style="margin-top:24px;">
+        <div class="col col-40">
+          <ul class="point-list">
+            <li>왼쪽에는 설명 텍스트를 배치합니다.</li>
+            <li>오른쪽에는 이미지, 다이어그램, 그래프 등 시각 자료를 넣습니다.</li>
+            <li>텍스트는 3줄 이내로 짧고 명확하게 씁니다.</li>
+          </ul>
+        </div>
+        <div class="col col-60">
+          <div class="media-box">
+            여기에 이미지 / 다이어그램 / 그래프 삽입<br>(예: &lt;img src="..."&gt; 로 교체)
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>강의 제목</span>
+        <span class="page-num">05 / 10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 6 — 3열 카드 레이아웃 (개념 비교/분류)
+       ============================================================ -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">02. 핵심 개념 설명</p>
+      <h2 class="title-lg">세 가지 유형 비교</h2>
+      <div class="content-body">
+        <div class="grid-3">
+          <div class="card">
+            <p class="card-num">TYPE A</p>
+            <h3 class="card-title">첫 번째 유형</h3>
+            <p class="card-desc">이 유형에 대한 간단한 설명을 2~3줄로 작성합니다.</p>
+          </div>
+          <div class="card">
+            <p class="card-num">TYPE B</p>
+            <h3 class="card-title">두 번째 유형</h3>
+            <p class="card-desc">이 유형에 대한 간단한 설명을 2~3줄로 작성합니다.</p>
+          </div>
+          <div class="card">
+            <p class="card-num">TYPE C</p>
+            <h3 class="card-title">세 번째 유형</h3>
+            <p class="card-desc">이 유형에 대한 간단한 설명을 2~3줄로 작성합니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>강의 제목</span>
+        <span class="page-num">06 / 10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 7 — 통계/숫자 강조 슬라이드
+       ============================================================ -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">03. 사례 및 데이터</p>
+      <h2 class="title-lg">숫자로 보는 결과</h2>
+      <div class="content-body">
+        <div class="grid-3">
+          <div>
+            <div class="stat-num">87%</div>
+            <p class="stat-label">지표 설명 문구</p>
+          </div>
+          <div>
+            <div class="stat-num">3.2×</div>
+            <p class="stat-label">지표 설명 문구</p>
+          </div>
+          <div>
+            <div class="stat-num">120+</div>
+            <p class="stat-label">지표 설명 문구</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>강의 제목</span>
+        <span class="page-num">07 / 10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 8 — 표(테이블) 슬라이드
+       ============================================================ -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">03. 사례 및 데이터</p>
+      <h2 class="title-lg">항목별 비교표</h2>
+      <div class="content-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>항목</th><th>구분 A</th><th>구분 B</th><th>비고</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>항목 1</td><td>값 1</td><td>값 2</td><td>설명</td></tr>
+            <tr><td>항목 2</td><td>값 1</td><td>값 2</td><td>설명</td></tr>
+            <tr><td>항목 3</td><td>값 1</td><td>값 2</td><td>설명</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="slide-footer">
+        <span>강의 제목</span>
+        <span class="page-num">08 / 10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 9 — 절차/단계 슬라이드 (실제 순서가 있을 때만 번호 사용)
+       ============================================================ -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">04. 실습 / 적용 방법</p>
+      <h2 class="title-lg">진행 절차</h2>
+      <div class="content-body">
+        <ol class="step-list">
+          <li>첫 번째 단계에 대한 설명을 작성합니다.</li>
+          <li>두 번째 단계에 대한 설명을 작성합니다.</li>
+          <li>세 번째 단계에 대한 설명을 작성합니다.</li>
+        </ol>
+      </div>
+      <div class="slide-footer">
+        <span>강의 제목</span>
+        <span class="page-num">09 / 10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 10 — 마무리 슬라이드
+       ============================================================ -->
+  <section class="slide slide-closing">
+    <div class="slide-inner">
+      <p class="eyebrow" style="color:#8FB0FF;">Thank You</p>
+      <h2 class="title-lg" style="font-size:44px;">경청해 주셔서 감사합니다</h2>
+      <p class="subtitle">질문이나 의견은 언제든 환영합니다</p>
+      <div class="cover-meta" style="justify-content:center; color:#B7BCC6;">
+        <span style="border-color:#3A3D42;">발표자 이름</span>
+        <span>이메일 / 연락처</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- 네비게이션 컨트롤 -->
+<div class="nav-controls">
+  <button id="prevBtn" aria-label="이전 슬라이드">‹</button>
+  <span class="nav-count"><span id="curNum">1</span> / <span id="totalNum">10</span></span>
+  <button id="nextBtn" aria-label="다음 슬라이드">›</button>
+</div>
+
+<script>
+  // ============================================================
+  // 슬라이드 네비게이션 로직
+  // 사용법: ← → 방향키, 클릭, 스와이프(모바일)로 이동
+  // ============================================================
+  (function () {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const total = slides.length;
+    let idx = 0;
+
+    document.getElementById('totalNum').textContent = String(total).padStart(2, '0');
+    document.body.classList.add('present-mode');
+
+    function render() {
+      slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+      document.getElementById('curNum').textContent = String(idx + 1).padStart(2, '0');
+    }
+
+    function go(delta) {
+      idx = Math.min(Math.max(idx + delta, 0), total - 1);
+      render();
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => go(-1));
+    document.getElementById('nextBtn').addEventListener('click', () => go(1));
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') go(1);
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(-1);
+    });
+
+    // 간단한 스와이프 지원 (모바일)
+    let touchStartX = null;
+    window.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    window.addEventListener('touchend', (e) => {
+      if (touchStartX === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+      touchStartX = null;
+    });
+
+    render();
+  })();
+</script>
+
+</body>
+</html>
